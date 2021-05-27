@@ -1,20 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/Nikhil12894/testprojectforgo/pkg/reading"
+	"github.com/Nikhil12894/testprojectforgo/pkg/config"
+	"github.com/Nikhil12894/testprojectforgo/pkg/http/rest"
+	"github.com/Nikhil12894/testprojectforgo/pkg/redis"
+	"github.com/valyala/fasthttp"
 )
 
 func main() {
+	configuration, err := config.FromFile("main/config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	fmt.Println("server started on port 8080...")
+	service, err := redis.New(configuration.Redis.Host, configuration.Redis.Port, configuration.Redis.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer service.Close()
 
-	// router := rest.InitHandler()
+	router := rest.New(configuration.Options.Schema, configuration.Options.Prefix, service)
 
-	router1 := reading.InitHandler()
-
-	log.Fatal(http.ListenAndServe(":8080", router1))
+	log.Fatal(fasthttp.ListenAndServe(":"+configuration.Server.Port, router.Handler))
 }
