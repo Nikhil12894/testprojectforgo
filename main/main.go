@@ -5,14 +5,16 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Nikhil12894/testprojectforgo/pkg/http/rest"
+	"github.com/Nikhil12894/testprojectforgo/pkg/reading"
 )
 
 func main() {
 
 	fmt.Println("server started on port 8080...")
 
-	router := rest.InitHandler()
+	// router := rest.InitHandler()
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	router1 := reading.InitHandler()
+
+	log.Fatal(http.ListenAndServe(":8080", router1))
 }
